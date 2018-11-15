@@ -41,8 +41,8 @@ make -j2
 ```
 
 ## Citations
-[1] Snavely N, Seitz S M, Szeliski R. Photo Tourism: Exploring Photo Collections In 3D[J]. Acm Transactions on Graphics, 2006, 25(3):págs. 835-846.
+[1] Snavely N, Seitz S M, Szeliski R. [Photo Tourism: Exploring Photo Collections In 3D](http://phototour.cs.washington.edu/Photo_Tourism.pdf)[J]. Acm Transactions on Graphics, 2006, 25(3):págs. 835-846.
 
-[2] Wu C. Towards Linear-Time Incremental Structure from Motion[C]// International Conference on 3d Vision. IEEE Computer Society, 2013:127-134.
+[2] Wu C. [Towards Linear-Time Incremental Structure from Motion](http://ccwu.me/vsfm/vsfm.pdf)[C]// International Conference on 3d Vision. IEEE Computer Society, 2013:127-134.
 
-[3] Schönberger J L, Frahm J M. Structure-from-Motion Revisited[C]// Computer Vision and Pattern Recognition. IEEE, 2016.
+[3] Schönberger J L, Frahm J M. [Structure-from-Motion Revisited](https://demuc.de/papers/schoenberger2016sfm.pdf)[C]// Computer Vision and Pattern Recognition. IEEE, 2016.
