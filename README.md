@@ -18,7 +18,7 @@ MonocularSfm是一个三维重建的程序, 可以对有序或者无序的图片
 
 ## Building
 ```
-mkdir build
+mkdir build && cd build
 cmake ..
 make -j2
 ```
