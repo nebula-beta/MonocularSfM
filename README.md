@@ -8,7 +8,13 @@ MonocularSfm是一个三维重建的程序, 可以对有序或者无序的图片
 
 程序的输出是**三维稀疏点云**和已注册图像的**投影矩阵**.
 
+
+### south-building
 ![Image text](./docs/result1.png)
+
+
+### person-hall
+![Image text](./docs/result2.png)
 
 
 ## Dependencies
