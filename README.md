@@ -46,6 +46,9 @@ make -j2
 
 ```
 
+## Knowledge
+ See the [wiki](https://github.com/nebula-beta/MonocularSfM/wiki) page
+
 ## Citations
 [1] Snavely N, Seitz S M, Szeliski R. [Photo Tourism: Exploring Photo Collections In 3D](http://phototour.cs.washington.edu/Photo_Tourism.pdf)[J]. Acm Transactions on Graphics, 2006, 25(3):págs. 835-846.
 
