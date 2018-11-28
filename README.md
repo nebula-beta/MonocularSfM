@@ -16,6 +16,9 @@ MonocularSfm是一个三维重建的程序, 可以对有序或者无序的图片
 ### person-hall
 ![Image text](./docs/result2.png)
 
+### 东北大学
+![Image text](./docs/result3.png)
+
 
 ## Dependencies
 * [Eigen](http://eigen.tuxfamily.org) version 3.2
