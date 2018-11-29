@@ -48,15 +48,18 @@ void SceneGraph::Load(const cv::Ptr<Database> database, const size_t min_num_mat
     std::cout << "Building scene graph..." << std::flush;
 
     /// 添加图片
-    images_.reserve(connected_image_ids.size());
+    // TODO : 改善下面的逻辑，  因为会和register graph发生冲突
+//    images_.reserve(connected_image_ids.size());
+    images_.reserve(images.size());
     for(const auto& image : images)
     {
-        if(connected_image_ids.count(image.id) > 0)
+//        if(connected_image_ids.count(image.id) > 0)
         {
             point2D_t num_points2D = database->NumKeyPoints(image.id);
             AddImage(image.id, num_points2D);
         }
     }
+    std::cout << images_.size() << std::endl;
 
     /// 添加匹配
     size_t num_ignored_image_pairs  = 0;
@@ -74,9 +77,10 @@ void SceneGraph::Load(const cv::Ptr<Database> database, const size_t min_num_mat
             num_ignored_image_pairs += 1;
         }
     }
+//    Finalize();
 
     std::cout << "Total image pairs : " << image_pairs.size() << ".  Ignored : " << num_ignored_image_pairs << std::endl;
-    Finalize();
+
 
 }
 
@@ -95,6 +99,10 @@ void SceneGraph::Finalize()
             }
         }
 
+
+        // 说明该图像的特征点没有和其它图像的特征点匹配上
+        // 说明该图像是孤立的
+        // 删除该图像
         if (it->second.num_observations == 0)
         {
             images_.erase(it++);
@@ -199,7 +207,7 @@ void SceneGraph::AddCorrespondences(const image_t image_id1, const image_t image
                                  [image_id2, point2D_idx2](const Correspondence& corr)
                                  {
                                     return corr.image_id == image_id2 &&
-                                            corr.point2D_idx == point2D_idx2;
+                                           corr.point2D_idx == point2D_idx2;
                                  }) != image1.corrs[point2D_idx1].end();
 
             if(duplicate)

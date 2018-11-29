@@ -144,9 +144,12 @@ public:
 private:
     struct Image
     {
+        // num_observations表示在该图像的特征点中,有多少个点能够找到匹配点
         point2D_t num_observations = 0;
+        // 将与其它图像的匹配点累计起来, 总共多少个匹配点
         point2D_t num_correspondences = 0;
 
+        ///corrs[i] 表示第i个特征点的与其它图片的哪些特征点是匹配点
         std::vector<std::vector<Correspondence>> corrs;
     };
 
@@ -155,7 +158,7 @@ private:
     std::unordered_map<image_t, typename SceneGraph::Image> images_;
 
 
-    // 图像对之间的匹配点的数量
+    // 图像对之间有效的的匹配点的数量
     std::unordered_map<image_pair_t, point2D_t> image_pairs_;
 
 

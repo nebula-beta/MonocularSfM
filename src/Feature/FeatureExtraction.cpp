@@ -99,7 +99,8 @@ void FeatureExtractorCPU::RunExtraction()
         cv::Mat scaled_image;
         cv::Mat gray_image;
         image = cv::imread(image_path);
-        cv::cvtColor(image, gray_image, CV_BGR2GRAY);
+
+        cv::cvtColor(image, gray_image, cv::COLOR_BGRA2GRAY);
         double scale_x;
         double scale_y;
         ScaleImage(gray_image, scaled_image, max_image_size_, scale_x, scale_y);

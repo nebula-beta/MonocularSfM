@@ -2,6 +2,7 @@
 #define __TYPES_H__
 
 
+
 namespace MonocularSfM
 {
 
@@ -19,6 +20,13 @@ enum class Color
     COLOR_RED,
     COLOR_GREEN
 };
+
+
+
+
+
+
+
 
 
 } // namespace MonocularSfM

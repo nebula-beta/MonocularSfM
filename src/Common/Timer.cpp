@@ -18,6 +18,10 @@ void Timer::Start()
     start_time_ = std::chrono::high_resolution_clock::now();
 }
 
+bool Timer::IsStart()
+{
+    return started_;
+}
 void Timer::Restart()
 {
     started_ = false;
@@ -29,14 +33,17 @@ void Timer::Pause()
     paused_ = true;
     pause_time_ = std::chrono::high_resolution_clock::now();
 }
-
+bool Timer::IsPause()
+{
+    return paused_;
+}
 void Timer::Resume()
 {
     if(!paused_)
         return;
 
     paused_ = false;
-
+    // 把start_time_往后移动, 那么就相当于跳过了这段暂停的时间
     start_time_ += std::chrono::high_resolution_clock::now() - pause_time_;
 
 }

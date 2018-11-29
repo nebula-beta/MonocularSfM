@@ -1,6 +1,5 @@
 #include "Common/Types.h"
 #include "Visualization/Visualization.h"
-#include "Reconstruction/Mapper.h"
 
 #include <opencv2/viz/viz3d.hpp>
 #include <opencv2/viz/widgets.hpp>
@@ -74,8 +73,30 @@ void AsyncVisualization::RunVisualizationOnly()
                 ts_[i] = -Rs_[i].t() * ts_[i];
                 Rs_[i] = Rs_[i].inv();
 
+                // 点的类型要和相机的类型一致
+                Rs_[i].convertTo(Rs_[i], CV_32F);
+                ts_[i].convertTo(ts_[i], CV_32F);
+
                 cv::Affine3f pose(Rs_[i], ts_[i]);
-                cv::viz::WCameraPosition cam_position(fov, 0.5, cv::viz::Color::green());
+
+                cv::viz::WCameraPosition cam_position;
+                if(Rs_.size() > 2 && i == Rs_.size() - 1)
+                {
+                    cam_position = cv::viz::WCameraPosition(fov, 0.1, cv::viz::Color::red());
+                }
+                else if(Rs_.size() > 2 && i == Rs_.size() - 2)
+                {
+                    // orange,  r = 255, g = 165, b = 0
+                    int r = 255;
+                    int g = 165;
+                    int b = 0;
+                    cam_position = cv::viz::WCameraPosition(fov, 0.1, cv::viz::Color(b, g, r));
+                }
+                else
+                {
+                    cam_position = cv::viz::WCameraPosition(fov, 0.1, cv::viz::Color::green());
+
+                }
                 window.showWidget(name, cam_position);
                 window.setWidgetPose(name, pose);
             }
@@ -95,82 +116,6 @@ void AsyncVisualization::ShowPointCloud(std::vector<cv::Point3f>& point_cloud,
 
     is_point_cloud_update_ = true;
 }
-void AsyncVisualization::ShowPointCloud(const std::unordered_map<image_t, Image>& images,
-                                        const std::unordered_map<point3D_t, MapPoint> &map_points,
-                                        std::unordered_map<point3D_t, Color>& map_points_color)
-{
-    std::vector<cv::Point3f> point3Ds;
-    std::vector<cv::Vec3b> colors;
-    point3Ds.reserve(map_points.size());
-    colors.reserve(map_points.size());
-    size_t m = 0;
-    for(auto& ele : map_points)
-    {
-        point3D_t point3D_idx = ele.first;
-        const MapPoint& map_point = ele.second;
-
-        if(std::isnan(map_point.Point3D().x) ||
-           std::isnan(map_point.Point3D().y) ||
-           std::isnan(map_point.Point3D().z))
-        {
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-            std::cout << "nananananannnananananannnananananannnananananannnananananannnananananannnananananannnananananann " << std::endl;
-        }
-        point3Ds.push_back(map_point.Point3D());
-
-        assert(map_points_color.find(point3D_idx) != map_points_color.end());
-
-        Color color = map_points_color[point3D_idx];
-        if(color == Color::COLOR_ORIGIN)
-        {
-            image_t image_id = map_point.Element(0).image_id;
-            point2D_t point2D_idx = map_point.Element(0).point2D_idx;
-
-            colors.push_back(images.at(image_id).Color(point2D_idx));
-
-        }
-        else if(color == Color::COLOR_RED)
-        {
-            colors.push_back(cv::Vec3b(0, 0, 255));
-        }
-        else
-        {
-            colors.push_back(cv::Vec3b(0, 255, 0));
-        }
-
-    }
-    if(point3Ds.size() == 0)
-        return;
-    ShowPointCloud(point3Ds, colors);
-
-    for(auto& ele : map_points_color)
-    {
-        ele.second = Color::COLOR_ORIGIN;
-    }
-
-}
 
 void AsyncVisualization::ShowCameras(std::vector<cv::Mat> &Rs,
                                      std::vector<cv::Mat> &ts)
@@ -179,24 +124,6 @@ void AsyncVisualization::ShowCameras(std::vector<cv::Mat> &Rs,
     ts_ = std::move(ts);
 
     is_camera_update_ = true;
-}
-
-void AsyncVisualization::ShowCameras(const std::unordered_map<image_t, Image> &images,
-                                     const std::unordered_map<image_t, bool> registered)
-{
-    std::vector<cv::Mat> Rs;
-    std::vector<cv::Mat> ts;
-    for(const auto& elem : images)
-    {
-        if(registered.count(elem.first) > 0 && registered.at(elem.first))
-        {
-            Rs.push_back(elem.second.R().clone());
-            ts.push_back(elem.second.t().clone());
-        }
-
-    }
-
-    ShowCameras(Rs, ts);
 }
 
 

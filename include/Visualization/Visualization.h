@@ -11,7 +11,6 @@
 #include <opencv2/opencv.hpp>
 
 #include "Reconstruction/Image.h"
-#include "Reconstruction/MapPoint.h"
 
 
 
@@ -48,14 +47,11 @@ public:
     void ShowPointCloud(std::vector<cv::Point3f>& point_cloud,
                         std::vector<cv::Vec3b>& colors);
 
-    void ShowPointCloud(const std::unordered_map<image_t, Image>& images,
-                        const std::unordered_map<point3D_t, MapPoint>& map_points,
-                        std::unordered_map<point3D_t, Color>& map_points_color);
+
 
     void ShowCameras(std::vector<cv::Mat>& Rs,
                      std::vector<cv::Mat>& ts);
-    void ShowCameras(const std::unordered_map<image_t, Image>& images,
-                     const std::unordered_map<image_t, bool> registered);
+
 
 private:
     std::vector<cv::Point3f> point_cloud_ ;

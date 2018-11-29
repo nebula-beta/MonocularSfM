@@ -28,7 +28,7 @@ void FeatureMatcher::MatchImagePairs(const std::vector<std::pair<image_t, image_
 
         std::cout << "Compute Matches " << image_id1 << " - " << image_id2 <<  " ... " << std::endl;
 
-
+        // TODO : 优化, 进行cache
         cv::Mat desc1 = database_->ReadDescriptors(image_id1);
         cv::Mat desc2 = database_->ReadDescriptors(image_id2);
         std::vector<cv::DMatch> matches;

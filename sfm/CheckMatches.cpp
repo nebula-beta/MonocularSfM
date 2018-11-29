@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <opencv2/opencv.hpp>
 
@@ -9,18 +10,18 @@ using namespace std;
 using namespace cv;
 using namespace MonocularSfM;
 
-int main()
+int main(int argc, char** argv)
 {
 
 
     // step3 : 从数据库读取匹配, 并显示在图片上, 检查匹配是否正确
 
+    assert(argc == 1);
 
-
-    // TODO 将path变成命令行参数的形式
+    string database_path = argv[1];
 
     Database database ;
-    database.Open("./person-hall2.db");
+    database.Open(database_path);
 
 
     std::vector<std::pair<image_pair_t, std::vector<cv::DMatch>>> all_matches = database.ReadAllMatches();
@@ -44,7 +45,6 @@ int main()
         cv::KeyPoint::convert(kpts2, pts2);
         std::cout << image_id1 << " -- " << image_id2 << " : " << matches.second.size() << std::endl;
         FeatureUtils::ShowMatches(image1.name, image2.name, pts1, pts2, matches.second, "name", 1);
-
 
     }
 

@@ -9,27 +9,23 @@ using namespace cv;
 using namespace  MonocularSfM;
 
 
-int main()
+int main(int argc, char** argv)
 {
 
-    // step2 : 图片之间进行顺序匹配, 并存储到数据库
+    // step2 : 图片之间进行暴力匹配, 并存储到数据库
 
+    assert(argc == 2);
 
-
-    // TODO 将path变成命令行参数的形式
-
-    string database_path = "./person-hall2.db";
+    string database_path = argv[1];
 
     Timer timer;
     timer.Start();
 
-
-    SequentialFeatureMatcher sequential_matcher(database_path);
+    BruteFeatureMatcher brute_matcher(database_path);
     // 进行序列式匹配
-    sequential_matcher.RunMatching();
+    brute_matcher.RunMatching();
 
     timer.PrintMinutes();
 
     return 0;
 }
-

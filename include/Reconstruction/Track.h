@@ -1,43 +1,30 @@
-#ifndef __MAP_POINT_H__
-#define __MAP_POINT_H__
+#ifndef __TRACK_H__
+#define __TRACK_H__
 
+#include <cstddef>
+#include <cassert>
 #include <vector>
-
-#include <opencv2/opencv.hpp>
+#include <algorithm>
 
 #include "Common/Types.h"
 
 namespace MonocularSfM
 {
 
-
-struct MapPointElement
+struct TrackElement
 {
-    MapPointElement(){}
-    MapPointElement(image_t image_id, point2D_t point2D_idx)
+    TrackElement(){}
+    TrackElement(image_t image_id, point2D_t point2D_idx)
                   : image_id(image_id), point2D_idx(point2D_idx) {}
 
     image_t image_id;
     point2D_t point2D_idx;
 };
 
-class MapPoint
+class Track
 {
 public:
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // 存取整个track的3D点的ID
-    ////////////////////////////////////////////////////////////////////////////////
-    const point3D_t& Point3DIdx() const;
-    point3D_t& Point3DIdx();
-    void SetPoint3DIdx(const point3D_t&  point3D_idx);
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 存取整个track的3D点
-    ////////////////////////////////////////////////////////////////////////////////
-    const cv::Point3f& Point3D() const;
-    cv::Point3f& Point3D();
-    void SetPoint3D(const cv::Point3f& point3D);
 
     ////////////////////////////////////////////////////////////////////////////////
     // 获得track的长度
@@ -47,39 +34,37 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     // 获取整个track
     ////////////////////////////////////////////////////////////////////////////////
-    const std::vector<MapPointElement>& Elements() const;
-    std::vector<MapPointElement>& Elements();
+    const std::vector<TrackElement>& Elements() const;
+    std::vector<TrackElement>& Elements();
 
 
     ////////////////////////////////////////////////////////////////////////////////
     // 获取track中的元素
     ////////////////////////////////////////////////////////////////////////////////
-    const MapPointElement& Element(const size_t idx) const;
-    MapPointElement& Element(const size_t idx);
+    const TrackElement& Element(const size_t idx) const;
+    TrackElement& Element(const size_t idx);
 
     ////////////////////////////////////////////////////////////////////////////////
     // 向track中添加元素
     ////////////////////////////////////////////////////////////////////////////////
-    void AddElement(const MapPointElement& element);
+    void AddElement(const TrackElement& element);
     void AddElement(const image_t image_id, const point2D_t point2D_idx);
-    void AddElements(const std::vector<MapPointElement>& elements);
+    void AddElements(const std::vector<TrackElement>& elements);
 
     ////////////////////////////////////////////////////////////////////////////////
     // 从track中删除元素
     ////////////////////////////////////////////////////////////////////////////////
     void DeleteElement(const size_t idx);
-    void DeleteElement(const MapPointElement& element);
+    void DeleteElement(const TrackElement& element);
     void DeleteElement(const image_t image_id, const point2D_t point2D_idx);
 
 private:
-    point3D_t point3D_idx_;
-    cv::Point3f point3D_;
-    std::vector<MapPointElement> elements_;
+
+    std::vector<TrackElement> elements_;
 
 };
 
 
+} //namespace MonocularSfM
 
-} // namespace MonocularSfM
-
-#endif //__MAP_POINT_H__
+#endif //__TRACK_H__

@@ -11,8 +11,11 @@ class Timer
 public:
     Timer();
     void Start();
+    bool IsStart();
+
     void Restart();
     void Pause();
+    bool IsPause();
     void Resume();
     void Reset();
 

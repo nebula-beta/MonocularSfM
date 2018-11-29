@@ -1,158 +1,121 @@
 #include "Reconstruction/Image.h"
-
-
 using namespace MonocularSfM;
 
+Image::Image()
+{
+    num_points3D_ = 0;
+}
+Image::Image(const image_t& image_id, const std::string& image_name)
+            : image_id_(image_id), image_name_(image_name)
+{
+    num_points3D_ = 0;
+}
 
-image_t Image::ImageId() const
+
+Image::Image(const image_t& image_id,
+      const std::string& image_name,
+      const std::vector<Point2D>& points2D)
+      : image_id_(image_id), image_name_(image_name),  points2D_(points2D)
+{
+
+}
+
+const image_t& Image::ImageId() const
 {
     return image_id_;
 }
-void Image::SetImageId(const image_t image_id)
+image_t Image::ImageId()
+{
+    return image_id_;
+}
+void Image::SetImageId(const image_t& image_id)
 {
     image_id_ = image_id;
 }
 
-const std::string& Image::Name() const
+const std::string& Image::ImageName() const
 {
-    return name_;
+    return image_name_;
 }
-std::string& Image::Name()
+std::string Image::ImageName()
 {
-    return name_;
+    return image_name_;
+}
+void Image::SetImageName(const std::string& image_name)
+{
+    image_name_ = image_name;
 }
 
-void Image::SetName(const std::string& name)
+
+
+point2D_t Image::NumPoints2D() const
 {
-    name_ = name;
+    return points2D_.size();
+}
+point2D_t Image::NumPoints3D() const
+{
+    return num_points3D_;
 }
 
-
-const cv::Mat& Image::R() const
+const cv::Mat& Image::Rotation() const
 {
     return R_;
 }
-cv::Mat& Image::R()
+cv::Mat Image::Rotation()
 {
     return R_;
 }
-
-void Image::SetR(const cv::Mat& R)
+void Image::SetRotation(const cv::Mat& R)
 {
     R_ = R;
 }
 
-const cv::Mat& Image::t() const
+const cv::Mat& Image::Translation() const
 {
     return t_;
 }
-cv::Mat& Image::t()
+cv::Mat Image::Translation()
 {
     return t_;
 }
-
-void Image::SetT(const cv::Mat& t)
+void Image::SetTranslation(const cv::Mat& t)
 {
     t_ = t;
 }
 
-
-const cv::Point2f& Image::Point2D(const point2D_t point2D_idx) const
+void Image::SetPoints2D(const std::vector<Point2D>& points2D)
 {
-    assert(point2D_idx < point2D_.size());
-    return point2D_[point2D_idx];
-}
-cv::Point2f& Image::Point2D(const point2D_t point2D_idx)
-{
-    assert(point2D_idx < point2D_.size());
-    return point2D_[point2D_idx];
+    points2D_ = points2D;
 }
 
-const std::vector<cv::Point2f>& Image::Point2Ds() const
+const Point2D& Image::GetPoint2D(const point2D_t& point2D_idx) const
 {
-    return point2D_;
+    assert(point2D_idx < points2D_.size());
+    return points2D_[point2D_idx];
 }
-std::vector<cv::Point2f>& Image::Point2Ds()
+Point2D Image::GetPoint2D(const point2D_t& point2D_idx)
 {
-    return point2D_;
-}
-
-point2D_t Image::NumPoints2D() const
-{
-    return point2D_.size();
+    assert(point2D_idx < points2D_.size());
+    return points2D_[point2D_idx];
 }
 
-const cv::Vec3b& Image::Color(const point2D_t point2D_idx) const
+void Image::SetPoint2DForPoint3D(const point2D_t& point2D_idx,
+                                 const point3D_t& point3D_idx)
 {
-
-    assert(point2D_idx < colors_.size());
-    return colors_[point2D_idx];
-}
-cv::Vec3b& Image::Color(const point2D_t point2D_idx)
-{
-
-    assert(point2D_idx < colors_.size());
-    return colors_[point2D_idx];
+    assert(point2D_idx < points2D_.size());
+    num_points3D_ += 1;
+    points2D_[point2D_idx].SetPoint3D(point3D_idx);
 }
 
-const std::vector<cv::Vec3b>& Image::Colors() const
+void Image::ResetPoint2DForPoint3D(const point2D_t& point2D_idx)
 {
-    return colors_;
-}
-std::vector<cv::Vec3b>& Image::Colors()
-{
-    return colors_;
+    assert(point2D_idx < points2D_.size());
+    num_points3D_ -= 1;
+    points2D_[point2D_idx].ResetPoint3D();
 }
 
-
-void Image::SetPoint2D3DCorrespondence(const point2D_t point2D_idx, const point2D_t point3D_idx)
+bool Image::Point2DHasPoint3D(const point2D_t& point2D_idx)
 {
-    assert(point2D_idx < point2D_.size());
-    point2D_3D_corrs_[point2D_idx] = point3D_idx;
+    assert(point2D_idx < points2D_.size());
+    return points2D_[point2D_idx].HasPoint3D();
 }
-
-void Image::DisablePoint2D3DCorrespondence(const point2D_t point2D_idx)
-{
-    assert(IsPoint2DHasPoint3D(point2D_idx));
-
-    point2D_3D_corrs_.erase(point2D_idx);
-
-}
-
-bool Image::IsPoint2DHasPoint3D(const point2D_t point2D_idx) const
-{
-    assert(point2D_idx < point2D_.size());
-    return point2D_3D_corrs_.find(point2D_idx) != point2D_3D_corrs_.end();
-}
-
-point3D_t Image::GetPoint2D3DCorrespondence(const point2D_t point2D_idx)
-{
-    assert(point2D_idx < point2D_.size());
-    assert(point2D_3D_corrs_.find(point2D_idx) != point2D_3D_corrs_.end());
-    return point2D_3D_corrs_[point2D_idx];
-}
-
-
-size_t Image::NumPoint2D3DCorrespondence() const
-{
-    return point2D_3D_corrs_.size();
-}
-
-
-void Image::SetPointVisable(const point2D_t& point2D_idx)
-{
-    is_visable_point3D_[point2D_idx] = true;
-}
-
-void Image::DisablePointVisable(const point2D_t& point2D_idx)
-{
-    if(is_visable_point3D_.count(point2D_idx) != 0)
-        is_visable_point3D_.erase(point2D_idx);
-
-}
-
-size_t Image::NumVisablePoint3D() const
-{
-    return is_visable_point3D_.size();
-}
-

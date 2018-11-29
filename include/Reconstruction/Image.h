@@ -1,145 +1,79 @@
 #ifndef __IMAGE_H__
 #define __IMAGE_H__
-
 #include <string>
 #include <vector>
-#include <unordered_map>
-
 #include <opencv2/opencv.hpp>
 
 #include "Common/Types.h"
-
+#include "Reconstruction/Point2D.h"
 namespace MonocularSfM
 {
 
 class Image
 {
-
 public:
-    Image(){}
-    Image(const image_t image_id) : image_id_(image_id){}
-    Image(const image_t image_id, const std::string name): image_id_(image_id), name_(name) {}
+    Image();
+    Image(const image_t& image_id, const std::string& image_name);
+    Image(const image_t& image_id,
+          const std::string& image_name,
+          const std::vector<Point2D>& points2D);
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像Id
-    ////////////////////////////////////////////////////////////////////////////////
-    image_t ImageId() const;
-    void SetImageId(const image_t image_id);
+    const image_t& ImageId() const;
+    image_t ImageId();
+    void SetImageId(const image_t& image_id);
 
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像名字
-    ////////////////////////////////////////////////////////////////////////////////
-    const std::string& Name() const;
-    std::string& Name();
-    void SetName(const std::string& name);
+    const std::string& ImageName() const;
+    std::string ImageName();
+    void SetImageName(const std::string& image_name);
 
 
 
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像旋转矩阵
-    ////////////////////////////////////////////////////////////////////////////////
-    const cv::Mat& R() const;
-    cv::Mat& R();
-    void SetR(const cv::Mat& R);
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像平移向量
-    ////////////////////////////////////////////////////////////////////////////////
-    const cv::Mat& t() const;
-    cv::Mat& t();
-    void SetT(const cv::Mat& t);
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像的第point2D_idx个特征点坐标
-    ////////////////////////////////////////////////////////////////////////////////
-    const cv::Point2f& Point2D(const point2D_t point2D_idx) const;
-    cv::Point2f& Point2D(const point2D_t point2D_idx);
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像的所有特征点坐标
-    ////////////////////////////////////////////////////////////////////////////////
-    const std::vector<cv::Point2f>& Point2Ds() const;
-    std::vector<cv::Point2f>& Point2Ds();
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 图像特征点的数量
-    ////////////////////////////////////////////////////////////////////////////////
     point2D_t NumPoints2D() const;
+    point2D_t NumPoints3D() const;
 
+    const cv::Mat& Rotation() const;
+    cv::Mat Rotation();
+    void SetRotation(const cv::Mat& R);
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像特征点的颜色
-    ////////////////////////////////////////////////////////////////////////////////
-    const cv::Vec3b& Color(const point2D_t point2D_idx) const;
-    cv::Vec3b& Color(const point2D_t point2D_idx);
-
-
-
-    ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像所有特征点的颜色
-    ////////////////////////////////////////////////////////////////////////////////
-    const std::vector<cv::Vec3b>& Colors() const;
-    std::vector<cv::Vec3b>& Colors();
+    const cv::Mat& Translation() const;
+    cv::Mat Translation();
+    void SetTranslation(const cv::Mat& t);
 
 
 
+    void SetPoints2D(const std::vector<Point2D>& points2D);
+    const Point2D& GetPoint2D(const point2D_t& point2D_idx) const;
+    Point2D GetPoint2D(const point2D_t& point2D_idx);
 
     ////////////////////////////////////////////////////////////////////////////////
-    // 获取设置图像2D特征点的3D对应
+    // 设置2D点所对应的3D点
     ////////////////////////////////////////////////////////////////////////////////
-    void SetPoint2D3DCorrespondence(const point2D_t point2D_idx, const point2D_t point3D_idx);
-    void DisablePoint2D3DCorrespondence(const point2D_t point2D_idx);
-    bool IsPoint2DHasPoint3D(const point2D_t point2D_idx) const;
-    point3D_t GetPoint2D3DCorrespondence(const point2D_t point2D_idx);
-    size_t NumPoint2D3DCorrespondence() const;
+    void SetPoint2DForPoint3D(const point2D_t& point2D_idx,
+                              const point3D_t& point3D_idx);
 
+    void ResetPoint2DForPoint3D(const point2D_t& point2D_idx);
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // 能不能看到3D点
-    ////////////////////////////////////////////////////////////////////////////////
-    void SetPointVisable(const point2D_t& point2D_idx);
-    void DisablePointVisable(const point2D_t& point2D_idx);
-    size_t NumVisablePoint3D() const;
+    bool Point2DHasPoint3D(const point2D_t& point2D_idx);
+
 
 
 private:
-    // 需要在Mapper类中设置
     image_t image_id_;
-    std::string name_;
+    std::string image_name_;
 
-    // 需要在Mapper类中设置
+    // 在track中的2D点的数量
+	// SetPoint2DForPoint3D和ResetPoint2DForPoint3D会更新这个变量, +1或-1
+    point2D_t num_points3D_;
+
+
     cv::Mat R_;
     cv::Mat t_;
 
-    // 需要在Mapper类中设置
-    std::vector<cv::Point2f> point2D_;
-    std::vector<cv::Vec3b> colors_;
-
-    // 需要在Mapper类中设置
-    // 哪个2D点对应哪个3D点
-    std::unordered_map<point2D_t, point3D_t> point2D_3D_corrs_;
-
-    std::unordered_map<point2D_t, bool> is_visable_point3D_;
-
-
-
-
-
+    std::vector<Point2D> points2D_;
 
 };
 
-} // namespace MonocularSfM
 
-#endif // __IMAGE_H__
+} //namespace MonocularSfM
+
+#endif //__IMAGE_H__
