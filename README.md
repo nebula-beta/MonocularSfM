@@ -36,7 +36,7 @@ Mean reprojection error : `0.33772 [px]`
 ```
 mkdir build && cd build
 cmake ..
-make -j2
+make -j3
 ```
 
 ## How to Run
