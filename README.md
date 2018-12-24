@@ -62,6 +62,9 @@ or
 # 表示从数据库中读取特征及其匹配,然后开始重建, 将重建的结果存储在当前文件夹下"./"
 ```
 
+
+或者直接修改python脚本文件`pipeline.py`中的参数,然后直接运行该脚本即可.
+
 ## Knowledge
  See the [wiki](https://github.com/nebula-beta/MonocularSfM/wiki) page
 
