@@ -15,7 +15,7 @@ ENDIF()
 
 
 # 设置可执行文件在那个目录下生成
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 
 # 头文件的搜索路径
 include_directories(${PROJECT_SOURCE_DIR}/include)

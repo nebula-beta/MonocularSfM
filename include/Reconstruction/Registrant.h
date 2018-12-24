@@ -19,7 +19,7 @@ public:
     };
     struct Parameters
     {
-        size_t abs_pose_min_num_inliers = 10;            // PnP之后，2D-3D对应的数量大于该阈值，才认为成功
+        size_t abs_pose_min_num_inliers = 15;            // PnP之后，2D-3D对应的数量大于该阈值，才认为成功
         PnPMethod pnp_method = PnPMethod::EPNP;           // PnP方法
         size_t abs_pose_num_iterative_optimize = 10000;  //
         double abs_pose_ransac_confidence = 0.9999;      // PnP ransac置信度

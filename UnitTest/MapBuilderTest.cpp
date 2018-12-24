@@ -21,32 +21,33 @@ int main()
 //    params.cy = 3078.0 / 2;
 
 
-//    string database_path = "/Users/anton/gerrard-hall.db";
-//    // 相机内参
-//    params.fx = 3838.27;
-//    params.fy = 3837.22;
-//    params.cx = 2808;
-//    params.cy = 1872;
-
-//    // 畸变参数
-//    params.k1 = -0.110339;
-//    params.k2 = 0.079547;
-//    params.p1 = 0.000116211;
-//    params.p2 = 0.00029483;
-
-    string database_path = "/Users/anton/person-hall-sequential.db";
-
+    string database_path = "/home/anton/workspace/resources/clomap/gerrard-hall/gerrard-hall.db";
     // 相机内参
-    params.fx = 3839.71;
-    params.fy = 3840.23;
+    params.fx = 3838.27;
+    params.fy = 3837.22;
     params.cx = 2808;
     params.cy = 1872;
 
     // 畸变参数
-    params.k1 = -0.109344;
-    params.k2 = 0.0790394;
-    params.p1 = 0.000101365;
-    params.p2 = 0.000233581;
+    params.k1 = -0.110339;
+    params.k2 = 0.079547;
+    params.p1 = 0.000116211;
+    params.p2 = 0.00029483;
+
+//    string database_path = "/home/anton/workspace/resources/clomap/person-hall2/person-hall-brute-20240.db";
+//    string database_path = "/home/anton/workspace/resources/clomap/person-hall2/person-hall-sequential.db";
+
+//    /* // 相机内参 */
+//    params.fx = 3839.71;
+//    params.fy = 3840.23;
+//    params.cx = 2808;
+//    params.cy = 1872;
+
+//    /* // 畸变参数 */
+//    params.k1 = -0.109344;
+//    params.k2 = 0.0790394;
+//    params.p1 = 0.000101365;
+//    params.p2 = 0.000233581;
 
 
     // south-building
@@ -79,6 +80,7 @@ int main()
 
     map_builder.SetUp();
     map_builder.DoBuild();
+    map_builder.WriteOpenMVS("./mvs/");
     map_builder.WritePLY("./points3D.ply");
     map_builder.WritePLYBinary("./points3D_binary.ply");
     map_builder.Write("./");

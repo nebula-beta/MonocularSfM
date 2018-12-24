@@ -165,7 +165,7 @@ void MapBuilder::DoBuild()
                 current_num_registed_images += 1;
 
 
-                if(params_.is_visualization && current_num_registed_images % 20 == 0)
+                if(params_.is_visualization && current_num_registed_images % 6 == 0)
                 {
                     timer_for_visualization_.Resume();
 
@@ -227,12 +227,12 @@ void MapBuilder::DoBuild()
     }
 
 
-
     Summary();
 
     if(params_.is_visualization)
     {
         async_visualization_->WaitForVisualizationThread();
+        async_visualization_->Close();
     }
 
 }
@@ -487,7 +487,6 @@ bool MapBuilder::TryRegisterNextImage(const image_t& image_id)
 
 
 
-
         SetTimer(timer_for_triangulate_);
         // 三角测量
         std::vector<std::vector<Map::CorrData>> points2D_corr_datas;
@@ -628,6 +627,12 @@ void MapBuilder::FilterAllTracks()
     SetTimer(timer_for_global_filter_);
     map_->FilterAllPoints3D(params_.filtered_max_reproj_error, params_.filtered_min_tri_angle);
     timer_for_global_filter_.Pause();
+}
+
+
+void MapBuilder::WriteOpenMVS(const std::string& directory)
+{
+    map_->WriteOpenMVS(directory);
 }
 
 void MapBuilder::WritePLY(const std::string& path)

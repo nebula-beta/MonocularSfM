@@ -52,8 +52,10 @@ public:
     void ShowCameras(std::vector<cv::Mat>& Rs,
                      std::vector<cv::Mat>& ts);
 
+    void Close();
 
 private:
+    cv::viz::Viz3d window_;
     std::vector<cv::Point3f> point_cloud_ ;
     std::vector<cv::Vec3b> colors_;
     size_t point_cloud_change_count_ = 0;

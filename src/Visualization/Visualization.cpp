@@ -10,7 +10,7 @@
 using namespace MonocularSfM;
 AsyncVisualization::AsyncVisualization()
 {
-
+    window_ = cv::viz::Viz3d ("Point Cloud Visualization");
 }
 
 
@@ -31,24 +31,24 @@ void AsyncVisualization::RunVisualizationOnly()
 
 
     // 创建显示窗口
-    cv::viz::Viz3d window("Point Cloud Visualization");
-    window.setBackgroundColor(cv::viz::Color::black());
+//    cv::viz::Viz3d window("Point Cloud Visualization");
+    window_.setBackgroundColor(cv::viz::Color::black());
 
     // 添加坐标系
-    window.showWidget("Corrdinate Widget", cv::viz::WCoordinateSystem());
+    window_.showWidget("Corrdinate Widget", cv::viz::WCoordinateSystem());
 
 
-    while(!window.wasStopped())
+    while(!window_.wasStopped())
     {
         if(is_point_cloud_update_)
         {
             if(point_cloud_change_count_ != 0)
             {
-                window.removeWidget(point_cloud_name);
+                window_.removeWidget(point_cloud_name);
             }
 
             cv::viz::WCloud cloud(point_cloud_, colors_);
-            window.showWidget(point_cloud_name, cloud);
+            window_.showWidget(point_cloud_name, cloud);
 
             point_cloud_change_count_ ++;
             is_point_cloud_update_ = false;
@@ -59,7 +59,7 @@ void AsyncVisualization::RunVisualizationOnly()
             for(size_t i = 0; i < camera_count_; ++i)
             {
                 sprintf(name, "cam_position%d", i);
-                window.removeWidget(name);
+                window_.removeWidget(name);
             }
 
             for(size_t i = 0; i < Rs_.size(); ++i)
@@ -97,15 +97,14 @@ void AsyncVisualization::RunVisualizationOnly()
                     cam_position = cv::viz::WCameraPosition(fov, 0.1, cv::viz::Color::green());
 
                 }
-                window.showWidget(name, cam_position);
-                window.setWidgetPose(name, pose);
+                window_.showWidget(name, cam_position);
+                window_.setWidgetPose(name, pose);
             }
             camera_count_ = Rs_.size();
             is_camera_update_ = false;
         }
-        window.spinOnce(0, true);
+        window_.spinOnce(0, true);
     }
-
 }
 
 void AsyncVisualization::ShowPointCloud(std::vector<cv::Point3f>& point_cloud,
@@ -127,5 +126,8 @@ void AsyncVisualization::ShowCameras(std::vector<cv::Mat> &Rs,
 }
 
 
-
+void AsyncVisualization::Close()
+{
+    window_.close();
+}
 

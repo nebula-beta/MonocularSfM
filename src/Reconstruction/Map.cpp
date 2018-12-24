@@ -1,6 +1,10 @@
 #include "Reconstruction/Map.h"
 #include "Reconstruction/Projection.h"
 
+#include "Exportor/OpenMVSInterface.h"
+
+#include <sys/stat.h>
+
 
 
 using namespace MonocularSfM;
@@ -114,9 +118,9 @@ point3D_t Map::AddPoint3D(const cv::Vec3d& xyz, const Track& track, const double
         sum_color_z += color(2);
     }
 
-    cv::Vec3b color(static_cast<uchar>(sum_color_x /= track.Length()),
-                    static_cast<uchar>(sum_color_y /= track.Length()),
-                    static_cast<uchar>(sum_color_z /= track.Length()));
+    cv::Vec3b color(static_cast<uchar>(sum_color_x / track.Length()),
+                    static_cast<uchar>(sum_color_y / track.Length()),
+                    static_cast<uchar>(sum_color_z / track.Length()));
 
     return AddPoint3D(xyz, track, color, error);
 
@@ -170,12 +174,22 @@ void Map::AddObservation(const point3D_t& point3D_idx, const TrackElement& track
 {
     assert(HasPoint3DInMap(point3D_idx));
 
+    const Image& image = images_[track_el.image_id];
     Point3D& point3D = points3D_[point3D_idx];
 
 
     double ave_error = (point3D.Error() * point3D.Track().Length() + error) / (point3D.Track().Length() + 1);
+    const cv::Vec3b& point3D_old_color = point3D.Color();
+    const cv::Vec3b& color = image.GetPoint2D(track_el.point2D_idx).Color();
+
+    int point3D_new_color_x = (point3D_old_color(0) * point3D.Track().Length() + color(0)) / (point3D.Track().Length() + 1);
+    int point3D_new_color_y = (point3D_old_color(1) * point3D.Track().Length() + color(1)) / (point3D.Track().Length() + 1);
+    int point3D_new_color_z = (point3D_old_color(2) * point3D.Track().Length() + color(2)) / (point3D.Track().Length() + 1);
+
+    point3D.SetColor(cv::Vec3b(point3D_new_color_x, point3D_new_color_y, point3D_new_color_z));
     point3D.SetError(ave_error);
     point3D.AddElement(track_el);
+
 #ifdef DEBUG
     const Track& track = point3D.Track();
     double real_error = ComputeTrackError(point3D.XYZ(), track);
@@ -183,17 +197,6 @@ void Map::AddObservation(const point3D_t& point3D_idx, const TrackElement& track
 //    std::cout << "--------------------------------------------" << std::endl;
     assert(std::fabs(real_error - point3D.Error()) < 1e-6);
 #endif
-
-    const Image& image = images_[track_el.image_id];
-    const cv::Vec3b& point3D_old_color = point3D.Color();
-    const cv::Vec3b& color = image.GetPoint2D(track_el.point2D_idx).Color();
-
-    int point3D_new_color_x = (point3D_old_color(0) * point3D.Track().Length() + color(0)) / (point3D.Track().Length() + 1);
-    int point3D_new_color_y= (point3D_old_color(0) * point3D.Track().Length() + color(0)) / (point3D.Track().Length() + 1);
-    int point3D_new_color_z = (point3D_old_color(0) * point3D.Track().Length() + color(0)) / (point3D.Track().Length() + 1);
-
-    point3D.SetColor(cv::Vec3b(point3D_new_color_x, point3D_new_color_y, point3D_new_color_z));
-
 
     // 设置图像的2D点能够看到该3D点
     images_[track_el.image_id].SetPoint2DForPoint3D(track_el.point2D_idx, point3D_idx);
@@ -1284,6 +1287,146 @@ void Map::PrintStatistics(const struct Statistics& statistics)
 }
 
 
+
+void Map::WriteOpenMVS(const std::string& directory)
+{
+    mkdir(directory.c_str(), S_IRWXU);
+
+    MVS::Interface scene;
+
+    // camera
+    MVS::Interface::Platform platform;
+    MVS::Interface::Platform::Camera camera;
+    camera.K = K_;
+    cv::Mat cv_image = cv::imread(images_[registered_images_[0]].ImageName());
+    camera.width = cv_image.cols;
+    camera.height = cv_image.rows;
+
+    camera.R = MVS::Interface::Mat33d::eye();
+    camera.C = MVS::Interface::Pos3d(0, 0, 0);
+
+
+    platform.cameras.push_back(camera);
+
+
+    // images & pose
+    size_t nPoses = 0;
+    size_t num_images = scene_graph_->NumImages();
+
+
+    cv::Mat map1, map2;
+
+    for(image_t image_id  = 0; image_id < num_images; ++image_id)
+    {
+
+        const Image& image = images_[image_id];
+        const std::string src_image_path = image.ImageName();
+        std::string src_image_directory;
+        std::string src_image_name;
+        Utils::SplitPath(src_image_path, src_image_directory, src_image_name);
+
+        std::string dest_image_directory = Utils::UnionPath(directory, "undistorted_images");
+
+
+        mkdir(dest_image_directory.c_str(), S_IRWXU);
+        std::string dest_image_path = Utils::UnionPath(dest_image_directory, src_image_name);
+
+        std::cout << "Undistort image # " << image_id + 1 << "/" << num_images << std::endl;
+        cv::Mat cv_image = cv::imread(src_image_path);
+
+        MVS::Interface::Image mvs_image;
+        // TODO : 这里是相对路径, 要改成绝对路径
+        std::cout << dest_image_path << std::endl;
+        mvs_image.name = dest_image_path;
+        mvs_image.platformID = 0;
+        mvs_image.cameraID = 0;
+
+        if(registered_.count(image_id) > 0)
+        {
+            cv::Mat cv_undistort_image = cv_image.clone();
+            if(dist_coef_.at<double>(0, 0) != 0)
+            {
+                if(map1.size().area() == 0)
+                {
+                    cv::initUndistortRectifyMap(K_, dist_coef_, cv::Mat(), cv::Mat(), cv_image.size(), CV_32F, map1, map2);
+
+                }
+                cv::remap(cv_image, cv_undistort_image, map1, map2, cv::INTER_LINEAR);
+
+            }
+            cv_image = cv_undistort_image;
+
+            MVS::Interface::Platform::Pose pose;
+            mvs_image.poseID = platform.poses.size();
+            pose.R = image.Rotation();
+			cv::Mat C = -image.Rotation().t() * image.Translation();
+            pose.C = MVS::Interface::Pos3d(C.at<double>(0, 0), C.at<double>(1, 0), C.at<double>(2, 0));
+
+            platform.poses.push_back(pose);
+            ++nPoses;
+        }
+        else
+        {
+            mvs_image.poseID = NO_ID;
+        }
+
+        cv::imwrite(dest_image_path, cv_image);
+        scene.images.push_back(mvs_image);
+    }
+
+    scene.platforms.push_back(platform);
+
+
+
+    // points3D
+    for(const auto& point3D_el : points3D_)
+    {
+        const Point3D& point3D = point3D_el.second;
+        const Track& track = point3D.Track();
+
+        MVS::Interface::Vertex vert;
+        MVS::Interface::Vertex::ViewArr& views = vert.views;
+
+
+        for(const TrackElement& element : track.Elements())
+        {
+            MVS::Interface::Vertex::View view;
+            view.imageID = element.image_id;
+            view.confidence = 0;
+            views.push_back(view);
+        }
+
+        if(views.size() < 2)
+            continue;
+
+        std::sort(views.begin(), views.end(),
+                  [](const MVS::Interface::Vertex::View& view0, const MVS::Interface::Vertex::View& view1)
+                    {
+                        return view0.imageID < view1.imageID;
+                    });
+        const cv::Vec3d xyz = point3D.XYZ();
+        vert.X = MVS::Interface::Pos3f(xyz(0), xyz(1), xyz(2));
+        scene.vertices.push_back(vert);
+    }
+
+    // write OpenMVS data
+    if (!MVS::ARCHIVE::SerializeSave(scene, Utils::UnionPath(directory, "scene.mvs")))
+      return;
+
+    std::cout
+      << "Scene saved to OpenMVS interface format:\n"
+      << " #platforms: " << scene.platforms.size() << std::endl;
+      for (int i = 0; i < scene.platforms.size(); ++i)
+      {
+        std::cout << "  platform ( " << i << " ) #cameras: " << scene.platforms[i].cameras.size() << std::endl;
+      }
+      std::cout << " platform pose : " << scene.platforms[0].poses.size() << std::endl;
+    std::cout
+      << "  " << scene.images.size() << " images (" << nPoses << " calibrated)\n"
+      << "  " << scene.vertices.size() << " Landmarks\n";
+
+}
+
 void Map::WritePLY(const std::string& path)
 {
     // PLY data format
@@ -1354,23 +1497,12 @@ void Map::WritePLYBinary(const std::string& path)
 }
 
 
-cv::String UnionImagePath(const std::string& images_path, const cv::String& image_path)
-{
-    if(images_path[images_path.size() - 1] == '/')
-    {
-        return cv::String(images_path) + image_path;
-    }
-    else
-    {
-        return cv::String(images_path + "/") + image_path;
-    }
-}
 
 void Map::Write(const std::string& path)
 {
-    WriteCamera(UnionImagePath(path, "camara.txt"));
-    WriteImages(UnionImagePath(path, "images.txt"));
-    WritePoints3D(UnionImagePath(path, "points3D.txt"));
+    WriteCamera(Utils::UnionPath(path, "camara.txt"));
+    WriteImages(Utils::UnionPath(path, "images.txt"));
+    WritePoints3D(Utils::UnionPath(path, "points3D.txt"));
 }
 void Map::WriteCamera(const std::string& path)
 {

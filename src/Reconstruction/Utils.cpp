@@ -62,5 +62,24 @@ std::vector<cv::Vec3d> Utils::Point3fToVector3d(const std::vector<cv::Point3f>& 
     return ret_points3D;
 }
 
+cv::String Utils::UnionPath(const std::string& directory, const std::string& filename)
+{
+    if(directory[directory.size() - 1] == '/')
+    {
+        return cv::String(directory) + filename;
+    }
+    else
+    {
+        return cv::String(directory + "/") + filename;
+    }
+}
 
+void Utils::SplitPath(const std::string& path, std::string& directory, std::string& filename)
+{
+    int pos = path.find_last_of("/");
+
+    pos = pos + 1;
+    directory = path.substr(0, pos);
+    filename = path.substr(pos, path.size());
+}
 

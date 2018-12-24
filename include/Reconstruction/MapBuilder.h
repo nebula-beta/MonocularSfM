@@ -45,7 +45,7 @@ public:
         Triangulator::Parameters tri_params;          // 注册下一张图片，三角测量时，所需要用到的参数
         CeresBundelOptimizer::Parameters ba_params;   // BA优化时，所需要用到的参数
 
-        size_t min_num_matches = 15;                  // 数据库中匹配数大于该阈值的图像对才会被加载进scene graph
+        size_t min_num_matches = 10;                  // 数据库中匹配数大于该阈值的图像对才会被加载进scene graph
         size_t max_num_init_trials = 100;
 
         double complete_max_reproj_error = 4.0;       // 补全track时，最大的重投影误差
@@ -56,7 +56,7 @@ public:
 
         double global_ba_ratio = 1.07;                // 当图像增加了该比率时，才会进行global BA
 
-        bool is_visualization = false;                // 是否开启重建时， 点云、相机的可视化
+        bool is_visualization = true;                // 是否开启重建时， 点云、相机的可视化
 
 
 
@@ -84,6 +84,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     // 将重建结果（相机参数、图片参数、3D点）写到文件中
     ////////////////////////////////////////////////////////////////////////////////
+    void WriteOpenMVS(const std::string& directory);
     void WritePLY(const std::string& path);
     void WritePLYBinary(const std::string& path);
     void Write(const std::string& path);

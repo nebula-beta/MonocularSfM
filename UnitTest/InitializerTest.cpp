@@ -31,6 +31,9 @@ int main()
 {
 
 
+
+
+
     std::string database_path = "/Users/anton/gerrard-hall.db";
 
     Database database ;
@@ -61,6 +64,7 @@ int main()
     Initializer initializer(params, K);
 
     Initializer::Statistics statistics =  initializer.Initialize(Utils::Point2fToVector2d(aligned_pts1), Utils::Point2fToVector2d(aligned_pts2));
+
 
 //    if(statistics.is_succeed)
 //    {

@@ -8,6 +8,8 @@
 #include <fstream>
 
 #include "Common/Types.h"
+
+#include "Reconstruction/Utils.h"
 #include "Reconstruction/Image.h"
 #include "Reconstruction/Point3D.h"
 #include "Reconstruction/Track.h"
@@ -173,6 +175,7 @@ public:
 
 
     // write data to text file
+    void WriteOpenMVS(const std::string& directory);
     void WritePLY(const std::string& path);
     void WritePLYBinary(const std::string& path);
     void Write(const std::string& path);

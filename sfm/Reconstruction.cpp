@@ -1,21 +1,11 @@
 #include "Reconstruction/MapBuilder.h"
+#include "Reconstruction/Utils.h"
 #include <string>
 using namespace std;
 using namespace MonocularSfM;
 
 
 
-cv::String UnionImagePath2(const std::string& images_path, const cv::String& image_path)
-{
-    if(images_path[images_path.size() - 1] == '/')
-    {
-        return cv::String(images_path) + image_path;
-    }
-    else
-    {
-        return cv::String(images_path + "/") + image_path;
-    }
-}
 
 
 int main(int argc, char** argv)
@@ -55,7 +45,7 @@ int main(int argc, char** argv)
 
     map_builder.SetUp();
     map_builder.DoBuild();
-    map_builder.WritePLY(UnionImagePath2(output_path, "points3D.ply"));
-    map_builder.WritePLYBinary(UnionImagePath2(output_path, "points3D_binary.ply"));
+    map_builder.WritePLY(Utils::UnionPath(output_path, "points3D.ply"));
+    map_builder.WritePLYBinary(Utils::UnionPath(output_path, "points3D_binary.ply"));
     map_builder.Write(output_path);
 }
