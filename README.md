@@ -42,18 +42,24 @@ make -j3
 ## How to Run
 ```
 # step1 : 提取特征
-./FeatureExtraction   
+./FeatureExtraction image_path database_path  
+# ./FeatureExtraction ./images ./database.db
+# 表示读取images文件夹中的所有图片,提取特征, 存储到当前目录的database.db
 
 # step2 : 计算匹配(可以使用**顺序匹配**或者是**暴力匹配**)
-./ComputeSequentialMatches  # 顺序匹配
-./ComputeBruteMatches       # 暴力匹配
+./ComputeSequentialMatches database_path   # 顺序匹配
+./ComputeBruteMatches      database_path   # 暴力匹配
 
 # step3 : 检查匹配, 通过显示不同图像之间的匹配对, 来确认前两步是否正确(可跳过).
-./CheckMatches
+./CheckMatches  database_path
 
 # step4 : 重建
-./Reconstruction
+./Reconstruction database_path fx fy cx cy output_path
+or
+./Reconstruction database_path fx fy cx cy k1 k2 p1 p2 output_path
 
+# ./Reconstruction ./database.db fx fy cx cy ./
+# 表示从数据库中读取特征及其匹配,然后开始重建, 将重建的结果存储在当前文件夹下"./"
 ```
 
 ## Knowledge
