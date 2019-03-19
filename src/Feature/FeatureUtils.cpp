@@ -120,8 +120,8 @@ void FeatureUtils::UndistortFeature(const cv::Mat& image,
         cv::Point2f pt(mat.at<float>(i, 0), mat.at<float>(i, 1));
 
 
-        if(pt.x < 0 || pt.y < 0 || pt.x > image.cols - 5 || pt.y > image.rows - 5)
-            continue;
+//        if(pt.x < 0 || pt.y < 0 || pt.x > image.cols - 5 || pt.y > image.rows - 5)
+//            continue;
 
 //        std::cout << "(" << pts[i].x << ", " << pts[i].y << ") -----> (" << pt.x << ", " << pt.y << ")" << std::endl;
 
