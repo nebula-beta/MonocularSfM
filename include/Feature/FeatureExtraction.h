@@ -15,6 +15,7 @@ public:
     {
         L1_ROOT,
         L2,
+        ROOT_SIFT
     };
 public:
 
