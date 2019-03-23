@@ -4,6 +4,7 @@
 #include "Exportor/OpenMVSInterface.h"
 
 #include <sys/stat.h>
+#include <stdlib.h>
 
 
 
@@ -1292,6 +1293,20 @@ void Map::WriteOpenMVS(const std::string& directory)
 {
     mkdir(directory.c_str(), S_IRWXU);
 
+    std::string real_directory = directory;
+//    if(directory[0] != '/')
+
+//    {
+//        std::cout << "realpath " <<  std::endl;
+//        char abs_path[1024];
+//        std::cout << directory.c_str() << std::endl;
+//        realpath(directory.c_str(), abs_path);
+//        std::cout << abs_path << std::endl;
+//        real_directory = abs_path;
+//    }
+
+
+
     MVS::Interface scene;
 
     // camera
@@ -1313,9 +1328,11 @@ void Map::WriteOpenMVS(const std::string& directory)
     size_t nPoses = 0;
     size_t num_images = scene_graph_->NumImages();
 
-
     cv::Mat map1, map2;
 
+
+
+    std::cout << "----- write images ------ " << std::endl;
     for(image_t image_id  = 0; image_id < num_images; ++image_id)
     {
 
@@ -1325,10 +1342,13 @@ void Map::WriteOpenMVS(const std::string& directory)
         std::string src_image_name;
         Utils::SplitPath(src_image_path, src_image_directory, src_image_name);
 
+//        std::string dest_image_directory = Utils::UnionPath(directory, "undistorted_images");
         std::string dest_image_directory = Utils::UnionPath(directory, "undistorted_images");
-
-
         mkdir(dest_image_directory.c_str(), S_IRWXU);
+
+        std::cout << dest_image_directory << std::endl;
+
+
         std::string dest_image_path = Utils::UnionPath(dest_image_directory, src_image_name);
 
         std::cout << "Undistort image # " << image_id + 1 << "/" << num_images << std::endl;
@@ -1337,7 +1357,8 @@ void Map::WriteOpenMVS(const std::string& directory)
         MVS::Interface::Image mvs_image;
         // TODO : 这里是相对路径, 要改成绝对路径
         std::cout << dest_image_path << std::endl;
-        mvs_image.name = dest_image_path;
+//        mvs_image.name = dest_image_path;
+        mvs_image.name = Utils::UnionPath("./undistorted_images", src_image_name);
         mvs_image.platformID = 0;
         mvs_image.cameraID = 0;
 
@@ -1351,6 +1372,7 @@ void Map::WriteOpenMVS(const std::string& directory)
                     cv::initUndistortRectifyMap(K_, dist_coef_, cv::Mat(), cv::Mat(), cv_image.size(), CV_32F, map1, map2);
 
                 }
+
                 cv::remap(cv_image, cv_undistort_image, map1, map2, cv::INTER_LINEAR);
 
             }
@@ -1410,7 +1432,7 @@ void Map::WriteOpenMVS(const std::string& directory)
     }
 
     // write OpenMVS data
-    if (!MVS::ARCHIVE::SerializeSave(scene, Utils::UnionPath(directory, "scene.mvs")))
+    if (!MVS::ARCHIVE::SerializeSave(scene, Utils::UnionPath(real_directory, "scene.mvs")))
       return;
 
     std::cout
