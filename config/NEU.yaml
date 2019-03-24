@@ -6,9 +6,18 @@ database_path : "/home/anton/Documents/3D/img_all_after/img_all.db"
 
 SIFTextractor.max_image_size : 3200
 SIFTextractor.num_features   : 8024
+# 0 for L1_ROOT, 1 for L2, 2 for ROOT_SIFT
+SIFTextractor.normalization  : 0
 
-# 0 for sequential match, 1 for brute match
-SIFTmatch.match_type :  0
+# 0 for sequential match, 1 for brute match, 2 for vacabulary tree match(not support now)
+SIFTmatch.match_type : 1
+# if descriptor is normalizing, then distance between two descriptors in range [0.0, 2.0].
+# so, lower max distance with higher correct matches rate but less number of matcher, vice versa.
+SIFTmatch.max_distance : 0.7
+# distance_ratio may be from 0.5 to 1.0, lower distance ratio with higher correct matches rate but less number of matcher, vice versa.
+SIFTmatch.distance_ratio : 0.8
+# 0 for not use cross_check, 1 for use cross_check
+SIFTmatch.cross_check : 1
 
 
 #--------------------------------------------------------------------------------------------
@@ -28,7 +37,7 @@ Reconstruction.Camera.p2: 0.0
 
 
 
-Reconstrction.output_path : "./"
+Reconstrction.output_path : "./NEU"
 Reconstruction.is_visualization : 1
 
 

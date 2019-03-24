@@ -1,7 +1,7 @@
 %YAML:1.0
 
-images_path : "/home/anton/Documents/workspace/resources/clomap/gerrard-hall/images"
-database_path : "/home/anton/Documents/workspace/resources/clomap/gerrard-hall/gerrard-hall.db"
+images_path : "/home/anton/Documents/workspace/resources/clomap/person-hall2/images"
+database_path : "/home/anton/Documents/workspace/resources/clomap/person-hall2/person-hall2.db"
 
 
 SIFTextractor.max_image_size : 3200
@@ -25,19 +25,19 @@ SIFTmatch.cross_check : 1
 #--------------------------------------------------------------------------------------------
 
 # Camera calibration and distortion parameters (OpenCV) 
-Reconstruction.Camera.fx: 3838.27
-Reconstruction.Camera.fy: 3737.22
+Reconstruction.Camera.fx: 3839.71
+Reconstruction.Camera.fy: 3840.23
 Reconstruction.Camera.cx: 2808
 Reconstruction.Camera.cy: 1872
 
-Reconstruction.Camera.k1: -0.110339
-Reconstruction.Camera.k2: 0.079547
-Reconstruction.Camera.p1: 0.000116211
-Reconstruction.Camera.p2: 0.00029483
+Reconstruction.Camera.k1: -0.109344
+Reconstruction.Camera.k2: 0.0790394
+Reconstruction.Camera.p1: 0.000101365
+Reconstruction.Camera.p2: 0.000233581
 
 
 
-Reconstrction.output_path : "./gerrard-hall"
+Reconstrction.output_path : "./person-hall"
 Reconstruction.is_visualization : 1
 
 
