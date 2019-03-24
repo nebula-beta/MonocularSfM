@@ -84,6 +84,7 @@ public:
     ////////////////////////////////////////////////////////////////////////////////
     // 将重建结果（相机参数、图片参数、3D点）写到文件中
     ////////////////////////////////////////////////////////////////////////////////
+    void WriteCOLMAP(const std::string& directory);
     void WriteOpenMVS(const std::string& directory);
     void WritePLY(const std::string& path);
     void WritePLYBinary(const std::string& path);
@@ -146,6 +147,8 @@ private:
     cv::Ptr<AsyncVisualization>     async_visualization_;
 
 
+    int                             width_;
+    int                             height_;
     cv::Mat                         K_;
     cv::Mat                         dist_coef_;
 

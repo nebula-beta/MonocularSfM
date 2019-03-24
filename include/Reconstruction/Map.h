@@ -55,7 +55,7 @@ public:
 
 public:
 
-    Map(cv::Ptr<SceneGraph> scene_graph, const cv::Mat& K, const cv::Mat& dist_coef = cv::Mat::zeros(4, 1, CV_64F));
+    Map(cv::Ptr<SceneGraph> scene_graph, int height, int width, const cv::Mat& K, const cv::Mat& dist_coef = cv::Mat::zeros(4, 1, CV_64F));
 
     void Load(cv::Ptr<Database> database);
 
@@ -175,6 +175,7 @@ public:
 
 
     // write data to text file
+    void WriteCOLMAP(const std::string& directory);
     void WriteOpenMVS(const std::string& directory);
     void WritePLY(const std::string& path);
     void WritePLYBinary(const std::string& path);
@@ -211,6 +212,8 @@ private:
 
 
     cv::Ptr<SceneGraph> scene_graph_;
+    int height_;
+    int width_;
     cv::Mat K_;
     cv::Mat dist_coef_;
 };

@@ -56,7 +56,11 @@ void MapBuilder::SetUp()
     cv::Ptr<Database> database = cv::Ptr<Database>(new Database());
     database->Open(database_path_);
 
-
+    // 得到图像的大小
+    Database::Image db_image = database->ReadImageById(0);
+    cv::Mat image = cv::imread(db_image.name);
+    height_ = image.rows;
+    width_ = image.cols;
 
     timer.Start();
     // 加载scene graph
@@ -77,7 +81,7 @@ void MapBuilder::SetUp()
     timer.PrintSeconds();
 
     // 加载map
-    map_ = cv::Ptr<Map>(new Map(scene_graph_, K_, dist_coef_));
+    map_ = cv::Ptr<Map>(new Map(scene_graph_, height_, width_, K_, dist_coef_));
     map_->Load(database);
     std::cout << std::setw(kWidth) << "Load Map ";
 
@@ -629,7 +633,10 @@ void MapBuilder::FilterAllTracks()
     timer_for_global_filter_.Pause();
 }
 
-
+void MapBuilder::WriteCOLMAP(const std::string& directory)
+{
+    map_->WriteCOLMAP(directory);
+}
 void MapBuilder::WriteOpenMVS(const std::string& directory)
 {
     map_->WriteOpenMVS(directory);

@@ -5,12 +5,43 @@
 
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <math.h>
 
 
 
 using namespace MonocularSfM;
 
+std::string GetImageName(std::string path)
+{
+    int i = path.size() - 1;
+    while(path[i] != '/')
+        i--;
+    return path.substr(i + 1, path.size());
+}
+int sign(float x)
+{
+    return x >= 0 ? 1 : -1;
+}
+float myMax(float x, float y)
+{
+    return x >y ? x : y;
 
+}
+void QuaternionFromMatrix(const cv::Mat& R, float quat[])
+{
+    // Adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+
+    quat[0] = (float)sqrt(myMax(0.0, 1 + R.at<float>(0, 0) + R.at<float>(1, 1) + R.at<float>(2, 2))) / 2;
+
+    quat[1] = (float)sqrt(myMax(0.0, 1 + R.at<float>(0, 0) - R.at<float>(1, 1) - R.at<float>(2, 2))) / 2;
+    quat[2] = (float)sqrt(myMax(0.0, 1 - R.at<float>(0, 0) + R.at<float>(1, 1) - R.at<float>(2, 2))) / 2;
+    quat[3] = (float)sqrt(myMax(0.0, 1 - R.at<float>(0, 0) - R.at<float>(1, 1) + R.at<float>(2, 2))) / 2;
+
+    quat[1] *= sign(R.at<float>(2, 1) - R.at<float>(1, 2));
+    quat[2] *= sign(R.at<float>(0, 2) - R.at<float>(2, 0));
+    quat[3] *= sign(R.at<float>(1, 0) - R.at<float>(0, 1));
+
+}
 // 数据库中的特征点是没有去畸变的， 所以要进行去畸变处理
 void UndistortFeature(const cv::Mat& K,
                       const cv::Mat& dist_coef,
@@ -40,8 +71,8 @@ void UndistortFeature(const cv::Mat& K,
 
 
 
-Map::Map(cv::Ptr<SceneGraph> scene_graph, const cv::Mat& K, const cv::Mat& dist_coef)
-    : scene_graph_(scene_graph), K_(K),  dist_coef_(dist_coef)
+Map::Map(cv::Ptr<SceneGraph> scene_graph, int height, int width, const cv::Mat& K, const cv::Mat& dist_coef)
+    : scene_graph_(scene_graph), height_(height), width_(width), K_(K),  dist_coef_(dist_coef)
 {
     num_point3D_idx_ = 0;
     assert(K.type() == CV_64F);
@@ -1288,6 +1319,124 @@ void Map::PrintStatistics(const struct Statistics& statistics)
 }
 
 
+void Map::WriteCOLMAP(const std::string& directory)
+{
+    mkdir(directory.c_str(), S_IRWXU);
+    std::ofstream file;
+    // trunc : 如果文件已存在则先删除该文件
+    file.open(Utils::UnionPath(directory, "cameras.txt"), std::ios::trunc);
+
+    file << "# Camera list with one line of data per camera:\n";
+    file << "#   CAMERA_ID, MODEL, WIDTH, HEIGHT, PARAMS[]\n";
+    file << "# Number of cameras: 1\n";
+    file << "# fx, fy, cx, cy, k1, k2, p1, p2" << std::endl;
+
+
+    const double& fx = K_.at<double>(0, 0);
+    const double& fy = K_.at<double>(1, 1);
+    const double& cx = K_.at<double>(0, 2);
+    const double& cy = K_.at<double>(1, 2);
+
+    const double& k1 = dist_coef_.at<double>(0, 0);
+    const double& k2 = dist_coef_.at<double>(1, 0);
+    const double& p1 = dist_coef_.at<double>(2, 0);
+    const double& p2 = dist_coef_.at<double>(3, 0);
+
+
+    file << width_ << " ";
+    file << height_ << " " ;
+    file << fx << " ";
+    file << fy << " ";
+    file << cx << " ";
+    file << cy << " ";
+
+    file << k1 << " ";
+    file << k2 << " ";
+    file << p1 << " ";
+    file << p2 << std::endl;
+    file.close();
+
+
+
+    file.open(Utils::UnionPath(directory, "images.txt"), std::ios::trunc);
+    for(const auto& image_el : images_)
+    {
+        image_t image_id = image_el.first;
+        Image image = image_el.second;
+
+        cv::Mat R = image.Rotation();
+        cv::Mat t = image.Translation();
+        float quat[4];
+        QuaternionFromMatrix(R, quat);
+        file << image_id << " ";
+        file << quat[0] << " ";
+        file << quat[1] << " ";
+        file << quat[2] << " ";
+        file << quat[3] << " ";
+        file << t.at<double>(0, 0) << " ";
+        file << t.at<double>(1, 0) << " ";
+        file << t.at<double>(2, 0) << " ";
+        file << 1 << " ";
+        file << GetImageName(image.ImageName()) << "\n";
+
+        for(point2D_t point2D_idx = 0; point2D_idx < image.NumPoints2D(); ++ point2D_idx)
+        {
+            Point2D point2D = image.GetPoint2D(point2D_idx);
+            if(point2D.HasPoint3D())
+            {
+                point3D_t point3D_idx = point2D.Point3DId();
+                cv::Vec2d XY = point2D.XY();
+                file << XY(0) << " " << XY(1) << " " << point3D_idx << " ";
+            }
+            else
+            {
+
+                cv::Vec2d XY = point2D.XY();
+                file << XY(0) << " " << XY(1) << " " << -1 << " ";
+            }
+
+        }
+        file << "\n";
+    }
+
+    file.close();
+
+
+
+
+
+    file.open(Utils::UnionPath(directory, "points3D.txt"), std::ios::trunc);
+    for(auto& point3D_el : points3D_)
+    {
+        point3D_t point3D_idx = point3D_el.first;
+        Point3D point3D = point3D_el.second;
+
+        cv::Vec3d XYZ = point3D.XYZ();
+        cv::Vec3b color = point3D.Color();
+        double error = point3D.Error();
+        file << point3D_idx << " ";
+        file << XYZ(0) << " ";
+        file << XYZ(1) << " ";
+        file << XYZ(2) << " ";
+        file << (int)color(0) << " ";
+        file << (int)color(1) << " ";
+        file << (int)color(2) << " ";
+        file << error << " ";
+
+        Track track = point3D.Track();
+        for(const TrackElement& track_el : track.Elements())
+        {
+            file << track_el.image_id << " ";
+            file << track_el.point2D_idx << " ";
+        }
+        file << "\n";
+    }
+    file.close();
+
+
+
+
+}
 
 void Map::WriteOpenMVS(const std::string& directory)
 {
@@ -1544,7 +1693,6 @@ void Map::WriteCamera(const std::string& path)
     const double& p2 = dist_coef_.at<double>(3, 0);
 
 
-    // TOOD : 在map中，没有存储畸变参数
 
     file << fx << " ";
     file << fy << " ";
