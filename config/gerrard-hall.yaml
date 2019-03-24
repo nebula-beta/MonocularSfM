@@ -1,0 +1,37 @@
+%YAML:1.0
+
+images_path : "/home/anton/Documents/workspace/resources/clomap/gerrard-hall/images"
+database_path : "/home/anton/Documents/workspace/resources/clomap/gerrard-hall/gerrard-hall.db"
+
+
+SIFTextractor.max_image_size : 3200
+SIFTextractor.num_features   : 8024
+
+# 0 for sequential match, 1 for brute match
+SIFTmatch.match_type :  0
+
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+
+# Camera calibration and distortion parameters (OpenCV) 
+Reconstruction.Camera.fx: 3838.27
+Reconstruction.Camera.fy: 3737.22
+Reconstruction.Camera.cx: 2808
+Reconstruction.Camera.cy: 1872
+
+Reconstruction.Camera.k1: -0.110339
+Reconstruction.Camera.k2: 0.079547
+Reconstruction.Camera.p1: 0.000116211
+Reconstruction.Camera.p2: 0.00029483
+
+
+
+Reconstrction.output_path : "./"
+Reconstruction.is_visualization : 1
+
+
+
+
+

@@ -1,0 +1,37 @@
+%YAML:1.0
+
+images_path : "/home/anton/Documents/3D/img_all_after/img_all"
+database_path : "/home/anton/Documents/3D/img_all_after/img_all.db"
+
+
+SIFTextractor.max_image_size : 3200
+SIFTextractor.num_features   : 8024
+
+# 0 for sequential match, 1 for brute match
+SIFTmatch.match_type :  0
+
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+
+# Camera calibration and distortion parameters (OpenCV) 
+Reconstruction.Camera.fx: 1449.2752980237
+Reconstruction.Camera.fy: 1449.2752980237
+Reconstruction.Camera.cx: 1080
+Reconstruction.Camera.cy: 720
+
+Reconstruction.Camera.k1: 0.0
+Reconstruction.Camera.k2: 0.0
+Reconstruction.Camera.p1: 0.0
+Reconstruction.Camera.p2: 0.0
+
+
+
+Reconstrction.output_path : "./"
+Reconstruction.is_visualization : 1
+
+
+
+
+
