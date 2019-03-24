@@ -39,8 +39,10 @@ cv::String UnionImagePath(const std::string& images_path, const cv::String& imag
  * @param scale_y               :   在y轴方向上的缩放比例
  */
 void ScaleImage(cv::Mat& src, cv::Mat& dst, const int& max_image_size, double& scale_x, double& scale_y);
+
 void L1RootNormalized(cv::Mat& descriptors);
 void L2Normalized(cv::Mat& descriptors);
+void RootSIFTNormalized(cv::Mat& descriptors);
 
 
 void FeatureExtractorCPU::RunExtraction()
@@ -264,5 +266,24 @@ void L2Normalized(cv::Mat& descriptors)
         row /= norm_l2;
         /* cv::normalize(row, row, 1, 0, cv::NORM_L2); */
 
+    }
+}
+
+void RootSIFTNormalized(cv::Mat& descriptors)
+{
+    assert(descriptors.type() == CV_32F);
+    for(size_t i = 0; i < descriptors.rows; ++i)
+    {
+        cv::Mat desc = descriptors.rowRange(i, i + 1);
+        double sum = 0;
+        for(size_t j = 0; j < desc.cols; ++j)
+        {
+            sum += desc.at<float>(i, j);
+        }
+        for(size_t j = 0; j < desc.cols; ++j)
+        {
+            desc.at<float>(i, j) /= sum;
+            desc.at<float>(i, j) = sqrt(desc.at<float>(i, j));
+        }
     }
 }
