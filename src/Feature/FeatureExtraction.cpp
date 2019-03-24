@@ -27,6 +27,7 @@ std::vector<cv::String> LoadImages(const std::string& images_path);
  */
 bool IsImagePath(const std::string& image_path);
 cv::String UnionImagePath(const std::string& images_path, const cv::String& image_path);
+std::string GetImageName(const std::string& full_path);
 
 /**
  * @brief scaleImage            :   将图片的最大尺寸缩放到max_image_size
@@ -39,6 +40,8 @@ cv::String UnionImagePath(const std::string& images_path, const cv::String& imag
  * @param scale_y               :   在y轴方向上的缩放比例
  */
 void ScaleImage(cv::Mat& src, cv::Mat& dst, const int& max_image_size, double& scale_x, double& scale_y);
+
+
 
 void L1RootNormalized(cv::Mat& descriptors);
 void L2Normalized(cv::Mat& descriptors);
@@ -69,7 +72,7 @@ void FeatureExtractorCPU::RunExtraction()
         if(!database.ExistImageByName(image_path))
         {
             db_image.id = i;
-            db_image.name = image_path;
+            db_image.name = GetImageName(image_path);
             database.WriteImage(db_image, true);
         }
         else
@@ -222,6 +225,15 @@ cv::String UnionImagePath(const std::string& images_path, const cv::String& imag
     {
         return cv::String(images_path + "/") + image_path;
     }
+}
+
+std::string GetImageName(const std::string& full_path)
+{
+    int i = full_path.size() - 1;
+    while(i >= 0 && full_path[i] != '/')
+        i--;
+    assert(i >= 0);
+    return full_path.substr(i + 1, full_path.size());
 }
 void ScaleImage(cv::Mat& src, cv::Mat& dst, const int& max_image_size, double& scale_x, double& scale_y)
 {
