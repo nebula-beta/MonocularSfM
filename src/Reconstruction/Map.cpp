@@ -1343,6 +1343,8 @@ void Map::WriteCOLMAP(const std::string& directory)
     const double& p2 = dist_coef_.at<double>(3, 0);
 
 
+    file << 1 << " ";
+    file << "OPENCV" << " ";
     file << width_ << " ";
     file << height_ << " " ;
     file << fx << " ";
@@ -1361,8 +1363,13 @@ void Map::WriteCOLMAP(const std::string& directory)
     file.open(Utils::UnionPath(directory, "images.txt"), std::ios::trunc);
     for(const auto& image_el : images_)
     {
+
         image_t image_id = image_el.first;
         Image image = image_el.second;
+
+        if(registered_.count(image_id) == 0)
+            continue;
+
 
         cv::Mat R = image.Rotation();
         cv::Mat t = image.Translation();
