@@ -33,6 +33,9 @@ target_link_libraries(ComputeSequentialMatches ${MonocularSfM_Feature_LIBS})
 add_executable(ComputeBruteMatches ComputeBruteMatches.cpp)
 target_link_libraries(ComputeBruteMatches ${MonocularSfM_Feature_LIBS})
 
+add_executable(ComputeMatches ComputeMatches.cpp)
+target_link_libraries(ComputeMatches ${MonocularSfM_Feature_LIBS})
+
 
 add_executable(CheckMatches CheckMatches.cpp)
 target_link_libraries(CheckMatches ${MonocularSfM_Feature_LIBS})

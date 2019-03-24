@@ -1,16 +1,18 @@
-﻿#include <iostream>
+#include <iostream>
 #include <opencv2/opencv.hpp>
 
 #include "Common/Timer.h"
 #include "Database/Database.h"
-#include "Feature/FeatureExtraction.h"
+#include "Feature/FeatureMatching.h"
 using namespace std;
 using namespace cv;
-using namespace MonocularSfM;
+using namespace  MonocularSfM;
+
 
 int main(int argc, char** argv)
 {
-    // step1 : 提取特征, 并存储到数据库
+
+    // step2 : 图片之间进行匹配, 并存储到数据库
 
     if(argc != 2)
     {
@@ -27,30 +29,33 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    // 图片所在的文件夹
-    string images_path;
     string database_path;
+    int match_type = 1;
 
-    int max_image_size = 3200;
-    int num_features = 8024;
-
-    fs["images_path"] >> images_path;
     fs["database_path"] >> database_path;
-    fs["SIFTextractor.max_image_size"] >> max_image_size;
-    fs["SIFTextractor.num_features"] >> num_features;
+    fs["SIFTMatch_type"] >> match_type;
+
+    assert(match_type == 0 || match_type == 1);
+
+    cv::Ptr<FeatureMatcher> matcher;
+    if(match_type == 0)
+    {
+        matcher = cv::Ptr<SequentialFeatureMatcher>(new SequentialFeatureMatcher(database_path));
+    }
+    else
+    {
+        matcher = cv::Ptr<BruteFeatureMatcher>(new BruteFeatureMatcher(database_path));
+    }
 
 
 
     Timer timer;
     timer.Start();
 
-    cv::Ptr<FeatureExtractor> extractor =
-            cv::Ptr<FeatureExtractorCPU>(new FeatureExtractorCPU(database_path, images_path, max_image_size, num_features));
-    extractor->RunExtraction();
+    // 进行匹配
+    matcher->RunMatching();
 
     timer.PrintMinutes();
-
-
 
     return 0;
 }
