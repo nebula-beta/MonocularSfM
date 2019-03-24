@@ -31,9 +31,16 @@ int main(int argc, char** argv)
 
     string database_path;
     int match_type = 1;
+    double max_distance = 0.7;
+    double distance_ratio = 0.8;
+    bool cross_check = true;
 
     fs["database_path"] >> database_path;
-    fs["SIFTMatch_type"] >> match_type;
+    fs["SIFTmatch.match_type"] >> match_type;
+    fs["SIFTmatch.max_distance"] >> max_distance;
+    fs["SIFTmatch.distance_ratio"] >> distance_ratio;
+    fs["SIFTmatch.cross_check"] >> cross_check;
+
 
     assert(match_type == 0 || match_type == 1);
 
