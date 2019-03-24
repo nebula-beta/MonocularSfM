@@ -26,13 +26,6 @@ set(MonocularSfM_Reconstruction_LIBS
 add_executable(FeatureExtraction FeatureExtraction.cpp)
 target_link_libraries(FeatureExtraction ${MonocularSfM_Feature_LIBS})
 
-add_executable(ComputeSequentialMatches ComputeSequentialMatches.cpp)
-target_link_libraries(ComputeSequentialMatches ${MonocularSfM_Feature_LIBS})
-
-
-add_executable(ComputeBruteMatches ComputeBruteMatches.cpp)
-target_link_libraries(ComputeBruteMatches ${MonocularSfM_Feature_LIBS})
-
 add_executable(ComputeMatches ComputeMatches.cpp)
 target_link_libraries(ComputeMatches ${MonocularSfM_Feature_LIBS})
 
