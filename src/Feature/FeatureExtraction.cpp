@@ -68,16 +68,16 @@ void FeatureExtractorCPU::RunExtraction()
 
         database.BeginTransaction();
         Database::Image db_image;
-
-        if(!database.ExistImageByName(image_path))
+        std::string image_name =GetImageName(image_path);
+        if(!database.ExistImageByName(image_name))
         {
             db_image.id = i;
-            db_image.name = GetImageName(image_path);
+            db_image.name = image_name;
             database.WriteImage(db_image, true);
         }
         else
         {
-            db_image = database.ReadImageByName(image_path);
+            db_image = database.ReadImageByName(image_name);
         }
 
         const bool exist_keypoints = database.ExistKeyPoints(db_image.id);
@@ -98,7 +98,6 @@ void FeatureExtractorCPU::RunExtraction()
             database.EndTransaction();
             continue;
         }
-
 
         cv::Mat image;
         cv::Mat scaled_image;
