@@ -61,6 +61,17 @@ make -j3
 ./pipeline ./config/NEU.yaml
 ```
 
+## Dataset
+
+You can download the datasets from [here](https://onedrive.live.com/?authkey=%21AAQumsDDwZBIW3w&id=C58A258D760E1B58%2146879&cid=C58A258D760E1B58), which provided by [COLMAP](https://colmap.github.io/datasets.html#datasets)
+
+
+* **Gerrard Hall**: 100 high-resolution images of the “Gerrard” hall at UNC Chapel Hill, which is the building right next to the “South” building. The images are taken with the same camera but different focus using a wide-angle lens.
+* **Graham Hall**: 1273 high-resolution images of the interior and exterior of “Graham” memorial hall at UNC Chapel Hill. The images are taken with the same camera but different focus using a wide-angle lens.
+* **Person Hall**: 330 high-resolution images of the “Person” hall at UNC Chapel Hill. The images are taken with the same camera using a wide-angle lens.
+* **South Building**: 128 images of the “South” building at UNC Chapel Hill. The images are taken with the same camera, kindly provided by Christopher Zach.
+
+
 ## Knowledge
  See the [wiki](https://github.com/nebula-beta/MonocularSfM/wiki) page
 
