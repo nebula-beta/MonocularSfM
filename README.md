@@ -54,6 +54,7 @@ make -j3
 ./Reconstruction ../config/NEU.yaml
 
 ```
+更多细节，请查看`config`文件夹下的`yaml`文件
 
 或者直接使用python脚本文件`pipeline.py`
 ```
