@@ -44,7 +44,7 @@ make -j3
 # step1 : 提取特征
 ./FeatureExtraction ../config/NEU.yaml
 
-# step2 : 计算匹配(可以使用**顺序匹配**或者是**暴力匹配**)
+# step2 : 计算匹配(根据数据集的不同，决定使用**顺序匹配**或者是**暴力匹配**, 通过修改config中配置文件的参数来实现)
 ./ComputeMatches ../config/NEU.yaml
 
 # step3 : 检查匹配, 通过显示不同图像之间的匹配对, 来确认前两步是否正确(可跳过).
