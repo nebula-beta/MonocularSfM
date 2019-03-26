@@ -42,28 +42,23 @@ make -j3
 ## How to Run
 ```
 # step1 : 提取特征
-./FeatureExtraction image_path database_path  
-# ./FeatureExtraction ./images ./database.db
-# 表示读取images文件夹中的所有图片,提取特征, 存储到当前目录的database.db
+./FeatureExtraction ../config/NEU.yaml
 
 # step2 : 计算匹配(可以使用**顺序匹配**或者是**暴力匹配**)
-./ComputeSequentialMatches database_path   # 顺序匹配
-./ComputeBruteMatches      database_path   # 暴力匹配
+./ComputeMatches ../config/NEU.yaml
 
 # step3 : 检查匹配, 通过显示不同图像之间的匹配对, 来确认前两步是否正确(可跳过).
-./CheckMatches  database_path
+./CheckMatches  ../config/NEU.yaml
 
 # step4 : 重建
-./Reconstruction database_path fx fy cx cy output_path
-or
-./Reconstruction database_path fx fy cx cy k1 k2 p1 p2 output_path
+./Reconstruction ../config/NEU.yaml
 
-# ./Reconstruction ./database.db fx fy cx cy ./
-# 表示从数据库中读取特征及其匹配,然后开始重建, 将重建的结果存储在当前文件夹下"./"
 ```
 
-
-或者直接修改python脚本文件`pipeline.py`中的参数,然后直接运行该脚本即可.
+或者直接使用python脚本文件`pipeline.py`
+```
+./pipeline ./config/NEU.yaml
+```
 
 ## Knowledge
  See the [wiki](https://github.com/nebula-beta/MonocularSfM/wiki) page
