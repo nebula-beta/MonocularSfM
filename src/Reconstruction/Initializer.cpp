@@ -478,7 +478,7 @@ std::string Initializer::GetFailReason()
     {
         fail_reason = (fail_reason.size() == 0) ? ("Not sufficient angle") : (fail_reason + " & Not sufficient angle");
     }
-    if(statistics_.ave_residual < params_.init_tri_max_error)
+    if(statistics_.ave_residual > params_.init_tri_max_error)
     {
         fail_reason = (fail_reason.size() == 0) ? ("Too large triangulation error") : (fail_reason + " & Too large triangulation error");
     }
