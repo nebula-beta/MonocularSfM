@@ -3,7 +3,7 @@
 using namespace MonocularSfM;
 
 
-const size_t kMaxNumImages = 1000000;
+const size_t kMaxNumImages = 10000;
 
 inline int SQLite3CallHelper(const int result_code, const std::string& filename, const int line_number)
 {
@@ -681,7 +681,7 @@ void Database::PairIdToImagePair(const image_pair_t pair_id,
     // default image_id1 < image_2
     *image_id2 = static_cast<image_t>(pair_id % kMaxNumImages);
     *image_id1 = static_cast<image_t>(pair_id - *image_id2) / kMaxNumImages;
-
+    printf("%d %d %d %d\n", pair_id, *image_id1, *image_id2, kMaxNumImages);
     assert(*image_id1 >= 0);
     assert(*image_id2 >= 0);
     assert(*image_id1 < kMaxNumImages);
