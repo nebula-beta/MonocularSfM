@@ -681,7 +681,6 @@ void Database::PairIdToImagePair(const image_pair_t pair_id,
     // default image_id1 < image_2
     *image_id2 = static_cast<image_t>(pair_id % kMaxNumImages);
     *image_id1 = static_cast<image_t>(pair_id - *image_id2) / kMaxNumImages;
-    printf("%d %d %d %d\n", pair_id, *image_id1, *image_id2, kMaxNumImages);
     assert(*image_id1 >= 0);
     assert(*image_id2 >= 0);
     assert(*image_id1 < kMaxNumImages);
