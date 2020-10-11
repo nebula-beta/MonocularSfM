@@ -55,7 +55,8 @@ int main(int argc, char** argv)
     fs["Reconstruction.is_visualization"] >> params.is_visualization;
 
 
-    MapBuilder map_builder(image_path, database_path, params);
+    //MapBuilder map_builder(image_path, database_path, params);
+    MapBuilder map_builder(database_path, params);
 
     map_builder.SetUp();
     map_builder.DoBuild();

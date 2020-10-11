@@ -23,7 +23,8 @@ void FeatureUtils::ExtractFeature(const cv::Mat& image,
     ///             也许不同的图片取得的排序靠前的特征点，　并不是重复的．
     ///             也是说大部分的特征点在这张图片上排序靠前，　在其它图片上排序靠后
 
-    cv::Ptr<cv::xfeatures2d::SIFT> ptr = cv::xfeatures2d::SIFT::create();
+    //cv::Ptr<cv::xfeatures2d::SIFT> ptr = cv::xfeatures2d::SIFT::create();
+    cv::Ptr<cv::SIFT> ptr = cv::SIFT::create();
     std::vector<cv::KeyPoint> tmp_kpts;
     std::vector<cv::KeyPoint> top_scale_kpts;
     ptr->detect(image, tmp_kpts);
